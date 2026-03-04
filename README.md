@@ -46,6 +46,7 @@ ultracipher/
 
 ## Build & Execução
 
+```
 # Compilar
 mvn package
 
@@ -75,11 +76,13 @@ java -jar target/ultracipher-1.0.0.jar hybrid-decrypt secret.txt.ucpq kyber.sec
 
 # Rodar testes
 mvn test
+```
 
 ---
 
 ## API Java
 
+```
 // Criptografia simétrica
 UltraCipherEngine engine = new UltraCipherEngine();
 byte[] key = engine.generateKey();
@@ -98,21 +101,25 @@ byte[] key = engine.deriveKeyFromPassword(password, salt, 32);
 // Hash
 byte[] hash = engine.hash(data);
 byte[] mac  = engine.mac(data, key);
+```
 
 ---
 
 ## Notas de Segurança
 
+```
 - Reutilizar nonce é catastrófico no GCM. UltraCipher gera automaticamente um nonce aleatório novo a cada criptografia.
 - Argon2id usa 64MB de RAM e 3 iterações por padrão. Aumente para maior segurança.
 - Kyber-1024 oferece segurança contra adversários clássicos e quânticos (Algoritmo de Shor).
 - Todas as comparações de tag usam comparação em tempo constante para evitar ataques de timing.
 - Material de chave secreta é apagado da memória após o uso sempre que possível.
+```
 
 ---
 
 ## Matemática
 
+```
 Todas as operações são derivadas dos primeiros princípios:
 
 - GF(2⁸): Polinômio irredutível x⁸ + x⁴ + x³ + x + 1 (FIPS 197)
@@ -120,3 +127,4 @@ Todas as operações são derivadas dos primeiros princípios:
 - NTT: Borboleta Cooley-Tukey sobre Z_3329[x]/(x²⁵⁶+1)
 - Poly1305: Avaliação polinomial sobre GF(2¹³⁰ - 5)
 - ChaCha20: Estrutura ARX (Add-Rotate-XOR), 20 rodadas.
+```
