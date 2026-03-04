@@ -21,6 +21,7 @@ Cada bit da matemática criptográfica implementado manualmente.
 
 ## Arquitetura
 
+```
 ultracipher/
 ├── core/
 │   ├── math/
@@ -39,6 +40,7 @@ ultracipher/
 │   └── api/
 │       └── UltraCipherEngine.java ← API unificada + seleção automática de algoritmo
 └── UltraCipher.java               ← Ponto de entrada CLI
+```
 
 ---
 
