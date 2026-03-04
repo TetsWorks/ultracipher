@@ -1,128 +1,120 @@
 # UltraCipher v1.0
-### Post-Quantum Hybrid Cryptography Engine — Built from Absolute Zero
+### Motor de Criptografia Híbrida Pós-Quântica — Construído do Zero Absoluto
 
-**Zero external dependencies. Zero frameworks. Pure Java.**  
-Every bit of cryptographic mathematics implemented by hand.
-
----
-
-## Algorithms (All Hand-Crafted)
-
-| Algorithm | Purpose | Security Level |
-|-----------|---------|---------------|
-| **AES-256-GCM** | Authenticated encryption | 256-bit classical |
-| **ChaCha20-Poly1305** | Fast stream cipher AEAD | 256-bit classical |
-| **Kyber-1024** | Post-quantum key encapsulation (NIST FIPS 203) | ~256-bit post-quantum |
-| **BLAKE3** | Cryptographic hash + KDF + MAC | 256-bit |
-| **Argon2id** | Memory-hard password KDF (PHC winner) | Configurable |
-| **GF(2⁸)** | Galois field arithmetic | Foundation of AES |
+Zero dependências externas. Zero frameworks. Java puro.
+Cada bit da matemática criptográfica implementado manualmente.
 
 ---
 
-## Architecture
+## Algoritmos (Todos Implementados à Mão)
 
-```
+| Algoritmo | Finalidade | Nível de Segurança |
+|-----------|------------|-------------------|
+| AES-256-GCM | Criptografia autenticada | 256 bits clássico |
+| ChaCha20-Poly1305 | Cifra de fluxo rápida com AEAD | 256 bits clássico |
+| Kyber-1024 | Encapsulamento de chave pós-quântico (NIST FIPS 203) | ~256 bits pós-quântico |
+| BLAKE3 | Hash criptográfico + KDF + MAC | 256 bits |
+| Argon2id | KDF de senha resistente a memória (vencedor do PHC) | Configurável |
+| GF(2⁸) | Aritmética de campo de Galois | Base do AES |
+
+---
+
+## Arquitetura
+
 ultracipher/
 ├── core/
 │   ├── math/
-│   │   └── GaloisField.java       ← GF(2^8) arithmetic: inverse, multiply, xtime
+│   │   └── GaloisField.java       ← Aritmética GF(2^8): inverso, multiplicação, xtime
 │   ├── primitives/
-│   │   ├── AES256.java            ← Full AES-256 (S-box, KeyExpansion, all rounds)
-│   │   ├── ChaCha20Poly1305.java  ← ChaCha20 stream cipher + Poly1305 MAC
-│   │   ├── BLAKE3.java            ← BLAKE3 hash (Merkle tree, XOF mode)
-│   │   ├── Argon2id.java          ← Argon2id KDF (memory-hard)
-│   │   └── UltraSecureRandom.java ← ChaCha20-based CSPRNG
+│   │   ├── AES256.java            ← AES-256 completo (S-box, KeyExpansion, todas as rodadas)
+│   │   ├── ChaCha20Poly1305.java  ← Cifra ChaCha20 + MAC Poly1305
+│   │   ├── BLAKE3.java            ← Hash BLAKE3 (árvore de Merkle, modo XOF)
+│   │   ├── Argon2id.java          ← KDF Argon2id (resistente a memória)
+│   │   └── UltraSecureRandom.java ← CSPRNG baseado em ChaCha20
 │   ├── modes/
-│   │   ├── AES256GCM.java         ← GCM mode (GHASH + CTR)
-│   │   └── StreamingEncryption.java ← Chunked streaming AEAD
+│   │   ├── AES256GCM.java         ← Modo GCM (GHASH + CTR)
+│   │   └── StreamingEncryption.java ← AEAD com criptografia em blocos (streaming)
 │   ├── kyber/
-│   │   └── Kyber1024.java         ← Kyber-1024 KEM (NTT, lattice arithmetic)
+│   │   └── Kyber1024.java         ← KEM Kyber-1024 (NTT, aritmética em reticulados)
 │   └── api/
-│       └── UltraCipherEngine.java ← Unified API + auto algorithm selection
-└── UltraCipher.java               ← CLI entry point
-```
+│       └── UltraCipherEngine.java ← API unificada + seleção automática de algoritmo
+└── UltraCipher.java               ← Ponto de entrada CLI
 
 ---
 
-## Build & Run
+## Build & Execução
 
-```bash
-# Build
+# Compilar
 mvn package
 
-# Demo (runs all systems)
+# Demo (executa todos os sistemas)
 java -jar target/ultracipher-1.0.0.jar demo
 
 # Benchmark
 java -jar target/ultracipher-1.0.0.jar benchmark
 
-# Generate key
+# Gerar chave
 java -jar target/ultracipher-1.0.0.jar keygen
 
-# Encrypt a file (symmetric)
+# Criptografar arquivo (simétrico)
 java -jar target/ultracipher-1.0.0.jar encrypt secret.txt ultracipher.key
 
-# Decrypt
+# Descriptografar
 java -jar target/ultracipher-1.0.0.jar decrypt secret.txt.uc ultracipher.key
 
-# Generate post-quantum key pair
+# Gerar par de chaves pós-quântico
 java -jar target/ultracipher-1.0.0.jar hybrid-keygen
 
-# Post-quantum encrypt
+# Criptografia pós-quântica
 java -jar target/ultracipher-1.0.0.jar hybrid-encrypt secret.txt kyber.pub
 
-# Post-quantum decrypt
+# Descriptografia pós-quântica
 java -jar target/ultracipher-1.0.0.jar hybrid-decrypt secret.txt.ucpq kyber.sec
 
-# Run tests
+# Rodar testes
 mvn test
-```
 
 ---
 
-## Java API
+## API Java
 
-```java
-// Symmetric encryption
+// Criptografia simétrica
 UltraCipherEngine engine = new UltraCipherEngine();
 byte[] key = engine.generateKey();
 EncryptedPacket packet = engine.encrypt(plaintext, key, aad);
 byte[] recovered = engine.decrypt(packet, key, aad);
 
-// Post-quantum hybrid encryption
+// Criptografia híbrida pós-quântica
 KeyPair kp = engine.generatePostQuantumKeyPair();
 HybridPacket hybrid = engine.hybridEncrypt(plaintext, kp.publicKey, aad);
 byte[] recovered = engine.hybridDecrypt(hybrid, kp.secretKey, aad);
 
-// Key derivation from password
+// Derivação de chave a partir de senha
 byte[] salt = engine.generateSalt();
 byte[] key = engine.deriveKeyFromPassword(password, salt, 32);
 
-// Hashing
+// Hash
 byte[] hash = engine.hash(data);
 byte[] mac  = engine.mac(data, key);
-```
 
 ---
 
-## Security Notes
+## Notas de Segurança
 
-- **Nonce reuse is catastrophic** for GCM. UltraCipher generates a fresh random nonce per encryption automatically.
-- **Argon2id** uses 64MB RAM and 3 iterations by default. Increase for higher security.
-- **Kyber-1024** provides security against both classical and quantum adversaries (Shor's algorithm).
-- All tag comparisons use **constant-time** comparison to prevent timing attacks.
-- Secret key material is wiped from memory after use where possible.
+- Reutilizar nonce é catastrófico no GCM. UltraCipher gera automaticamente um nonce aleatório novo a cada criptografia.
+- Argon2id usa 64MB de RAM e 3 iterações por padrão. Aumente para maior segurança.
+- Kyber-1024 oferece segurança contra adversários clássicos e quânticos (Algoritmo de Shor).
+- Todas as comparações de tag usam comparação em tempo constante para evitar ataques de timing.
+- Material de chave secreta é apagado da memória após o uso sempre que possível.
 
 ---
 
-## Mathematics
+## Matemática
 
-Every operation is derived from first principles:
+Todas as operações são derivadas dos primeiros princípios:
 
-- **GF(2⁸)**: Irreducible polynomial `x⁸ + x⁴ + x³ + x + 1` (FIPS 197)
-- **AES S-box**: Computed as `affine_transform(GF_inverse(x))`
-- **NTT**: Cooley-Tukey butterfly over `Z_3329[x]/(x²⁵⁶+1)`
-- **Poly1305**: Polynomial evaluation over `GF(2¹³⁰ - 5)`
-- **ChaCha20**: ARX (Add-Rotate-XOR) design, 20 rounds
-
-Built with 🔥 from absolute zero.
+- GF(2⁸): Polinômio irredutível x⁸ + x⁴ + x³ + x + 1 (FIPS 197)
+- S-box do AES: calculada como affine_transform(GF_inverse(x))
+- NTT: Borboleta Cooley-Tukey sobre Z_3329[x]/(x²⁵⁶+1)
+- Poly1305: Avaliação polinomial sobre GF(2¹³⁰ - 5)
+- ChaCha20: Estrutura ARX (Add-Rotate-XOR), 20 rodadas.
